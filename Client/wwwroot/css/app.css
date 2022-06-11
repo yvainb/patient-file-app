@@ -9,7 +9,33 @@ h1:focus {
 }
 
 a, .btn-link {
-    color: #0077cc;
+    color: #0071c1;
+}
+
+.btn-site {
+    border-radius: 4px;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    line-height: 3rem;
+    text-decoration: none;
+    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out;
+    background-color: rgba(255,255,255,0.25);
+    color: rgb(38, 40, 43);
+    font-size: 0.9rem;
+    margin: 10px;
+    border-color: rgba(48,86,161,1);
+}
+    .btn-site:hover {
+        background: rgba(48,86,161,1);
+        color: black;
+    }
+
+.main-site {
+    background-image: url('../logo_ybit.png');
+    background-position: 98% 97%;
+    background-size: 10%;
+    background-repeat: no-repeat;
 }
 
 .btn-primary {

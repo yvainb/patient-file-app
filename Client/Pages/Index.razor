@@ -1,9 +1,147 @@
 ﻿@page "/"
+@using System.ComponentModel.DataAnnotations
+@inject IJSRuntime JS
 
-<PageTitle>Index</PageTitle>
+<PageTitle>Mon nouveau formulaire</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>formulaire</h1>
+<div>
+    @*OnValidSubmit="@HandleValidSubmit"*@
+    @*<EditForm Model="@customer" OnValidSubmit="@HandleValidSubmit">*@
+    @*    <DataAnnotationsValidator />
+    <ValidationSummary />*@
+    <EditForm Model="@customer">
+        <div class="mb-3">
+            @if (showError)
+            {
+                <span style="color:red">Select Image</span>
+                <br />
+            }
+            <p>
+                <InputFile id="imageSelect"
+                           name="imageSelect"
+                           OnChange="@UploadImage"
+                           capture="camera"
+                           type="file"
+                           accept="image/*"
+                           class="btn btn-light" />
+            </p>
 
-Welcome to your new app.
+            <p>
+                <InputText id="name" @bind-Value="customer.Name" class="form-control" placeholder="Name" />
+            </p>
+            <p>
+                <InputText id="info2" @bind-Value="customer.Info2" class="form-control" placeholder="Info2" />
+            </p>
+            <p>
+                <InputText id="info3" @bind-Value="customer.Info3" class="form-control" placeholder="Info3" />
+            </p>
+            @if (image != null)
+            {
+                <p>
+                    <label class="form-label">Photo</label><br />
+                    <img id="photo" class="card-img-top img-fluid" style="border:1px;color:gray;width:150px;height=150px"
+                     src="data:image;base64,@System.Convert.ToBase64String(image)"
+                     alt="" />
+                </p>
+            }
+            <p>
+                <div style="display:inline-flex;flex-wrap: wrap;">
+                    <button @onclick="PrintInvoke" class="btn-site">Print New Document</button>
+                    <br /><br /><button @onclick="Test" @onclick:preventDefault="preventDefault" class="btn-site">Print New Document</button>
+                </div>
+            </p>
+        </div>
+    </EditForm>
+</div>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+
+@code {
+    public class Customer
+    {
+        [Required]
+        public string Name { get; set; }
+        public string Info2 { get; set; }
+        public string Info3 { get; set; }
+        public byte[] Image { get; set; }
+        public string Photo { get; set; }
+    }
+
+    bool preventDefault = false;
+    bool showError = false;
+
+    private Customer customer = new();
+    public bool ShowSpinner = false;
+    public bool ImageChanging = false;
+    public byte[] image;
+
+
+    protected override void OnInitialized()
+    {
+        customer = new();
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (image != null)
+        {
+            showError = false;
+        }
+    }
+
+    protected async Task UploadImage(InputFileChangeEventArgs e)
+    {
+        ShowSpinner = true;
+        ImageChanging = true;
+
+        StateHasChanged();
+
+        //Remove the old picture...
+        //var oldImage = image;
+        //image = null;
+
+        //get the file
+        var file = e.File;
+
+        var newFile = await e.File.RequestImageFileAsync("image/png", 300, 300);
+        image = await File2ByteArray(newFile);
+        customer.Photo = System.Convert.ToBase64String(image);
+        ShowSpinner = false;
+        ImageChanging = false;
+    }
+
+    private async Task<byte[]> File2ByteArray(IBrowserFile file)
+    {
+        byte[] bytes = new byte[file.Size];
+        await file.OpenReadStream(file.Size).ReadAsync(bytes);
+
+        return bytes;
+    }
+
+    private async Task PrintInvoke()
+    {
+        if (image != null)
+        {
+            await JS.InvokeVoidAsync("printInvoke", customer.Name, customer.Info2, customer.Info3, System.Convert.ToBase64String(image));
+        }
+        else
+        {
+            showError = true;
+        }
+    }
+
+    private async Task Test()
+    {
+        if (image != null)
+        {
+            await JS.InvokeVoidAsync("test", customer.Name, customer.Info2, customer.Info3, System.Convert.ToBase64String(image), preventDefault);
+        }
+        else
+        {
+            showError = true;
+        }
+    }
+
+
+
+}
