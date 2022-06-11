@@ -9,7 +9,7 @@ main {
 }
 
 .sidebar {
-    background-image: url('safari-wallpaper2.jpg'), linear-gradient(180deg, rgba(193, 202, 217, 0.5), rgba(193, 202, 217, 0.3));
+    background-image: url('safari-wallpaper.png'), linear-gradient(180deg, rgba(193, 202, 217, 0.5), rgba(193, 202, 217, 0.3));
 }
 
 .top-row {
